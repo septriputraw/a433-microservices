@@ -1,0 +1,33 @@
+# mendefinisikan versi docker
+version: "3.7"
+
+# mendefinisikan service
+services:
+  # mendefinisikan service pertama dengan nama item-app
+  item-app:
+    # mendefinisikan image yang digunakan dari github package
+    image: ghcr.io/septriputraw/item-app:v1
+    # Menerapkan restart policy agar container selalu restart ketika terhenti.
+    restart: always
+    # Melakukan port mapping agar dapat diakses dari port 80 di host.
+    ports:
+      - 81:8080
+    # Pastikan item-app hanya berjalan setelah item-db diluncurkan.
+    depends_on:
+      - item-db
+
+  # mendefinisikan service kedua dengan nama item-db
+  item-db:
+    # Menggunakan image mongo:3 dari Docker Hub.
+    image: mongo:3
+    # mendefinisikan platform yang digunakan
+    platform: linux/arm64
+    # Menerapkan restart policy agar container selalu restart ketika terhenti.
+    restart: always
+    # Memakai volume bernama app-db dengan target /data/db di container.
+    volumes:
+      - app-db:/data/db
+    
+# Memiliki satu buah volume bernama app-db.
+volumes:
+  app-db:
