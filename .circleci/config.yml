@@ -35,7 +35,7 @@ jobs:
           command: docker tag septriputraw/karsajobs-ui:latest ghcr.io/septriputraw/karsajobs-ui:latest
       - run:
           name: Login to Github Packages
-          command: echo $CR_PAT | docker login ghcr.io -u septriputraw --password-stdin
+          command: echo $GITHUB_TOKEN | docker login ghcr.io -u septriputraw --password-stdin
       - run:
           name: Push to Github Packages
           command: docker push ghcr.io/septriputraw/karsajobs-ui:latest
