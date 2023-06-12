@@ -1,0 +1,22 @@
+# version of Kubernetes API
+apiVersion: v1
+# define a Service object 
+kind: Service 
+# metadata defines the name of the Service object
+metadata: 
+  # sets the name of the Service object
+  name: mongodb 
+  # sets the labels for the Service object
+  labels: 
+    app: mongodb
+# spec defines the specification for the Service object
+spec: 
+  # sets the ports for the Service object with the port 27017
+  ports: 
+    - port: 27017
+  # sets the label selector to target pods with the label "app" set as "mongodb" and "tier" set as "database"
+  selector: 
+    app: mongodb
+    tier: database
+  # sets the cluster IP to None
+  clusterIP: None 

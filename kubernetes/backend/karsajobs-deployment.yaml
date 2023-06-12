@@ -1,0 +1,54 @@
+# Description: Kubernetes Deployment object for the backend server of the KarsaJobs application
+# set the apiVersion to "apps/v1" to use the apps/v1 API version
+apiVersion: apps/v1
+# set the kind to "Deployment" to create a Deployment object
+kind: Deployment
+# defines the metadata for the Deployment object
+metadata: 
+  # sets the name of the Deployment object as "karsajobs-backend"
+  name: karsajobs-backend
+  # sets the labels for the Deployment object with the label "app" set as "karsajobs" and "tier" set as "backend"
+  labels: 
+    app: karsajobs
+    tier: backend
+# defines the specification for the Deployment object
+spec: 
+  # sets the replicas for the Deployment object to 1
+  replicas: 1
+  # defines the selector for the Deployment object 
+  selector: 
+    # sets the matchLabels for the Deployment object with the label "tier" set as "backend"
+    matchLabels:
+      tier: backend
+  # defines the template for the Deployment object
+  template: 
+    # defines the metadata for the template
+    metadata:
+      # sets the labels for the template with the label "tier" set as "backend" and "app" set as "karsajobs"
+      labels: 
+        app: karsajobs
+        tier: backend
+    # defines the specification for the template
+    spec: 
+      # defines the containers for the template
+      containers:
+        - name: karsajobs-backend-server # defines the name of the container as "karsajobs-backend-server"
+          image: ghcr.io/septriputraw/karsajobs:latest # defines the image of the container from the Github Packages repository
+          ports: # defines the ports for the container with the container port 8080
+            - containerPort: 8080
+          # defines the environment variables for the container
+          env: 
+            - name: APP_PORT # defines the environment variable "APP_PORT" to the value "8080"
+              value: '8080'
+            - name: MONGO_HOST # defines the environment variable "MONGO_HOST" to the value "mongodb"
+              value: mongodb
+            - name: MONGO_USER # defines the environment variable "MONGO_USER" taken from the secret "mongodb-secret" with the key "MONGO_ROOT_USERNAME"
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: MONGO_ROOT_USERNAME
+            - name: MONGO_PASS # defines the environment variable "MONGO_PASS" taken from the secret "mongodb-secret" with the key "MONGO_ROOT_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: MONGO_ROOT_PASSWORD

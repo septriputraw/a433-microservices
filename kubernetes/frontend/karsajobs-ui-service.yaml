@@ -1,0 +1,24 @@
+# description: Service object for the karsajobs-ui pod
+# set apiVersion of Kubernetes API
+apiVersion: v1
+# set kind of Kubernetes object
+kind: Service
+# set metadata for the Service object
+metadata:
+  # set name of the Service object
+  name: karsajobs-ui
+  # set labels for the Service object
+  labels:
+    # set label "app" for the Service object
+    app: karsajobs
+# set specification of the Service object
+spec:
+  # set ports for the Service object
+  ports:
+  - port: 8000
+  # set selector for the Service object
+  selector:
+    # set label selector "tier" for the Service object to target pods with the label "tier" set as "frontend"
+    tier: frontend
+  # set type of the Service object to NodePort
+  type: NodePort

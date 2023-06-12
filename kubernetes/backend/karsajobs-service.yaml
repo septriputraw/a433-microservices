@@ -1,0 +1,21 @@
+# version of Kubernetes API
+apiVersion: v1
+# define a Service object
+kind: Service
+# define metadata for the Service object
+metadata:
+  # sets the name of the Service object as "karsajobs-backend"
+  name: karsajobs-backend
+  # sets labels for the Service object with the label "app" set as "karsajobs"
+  labels:
+    app: karsajobs
+# defines the specification of the Service object
+spec:
+  # sets the ports for the Service object with the port 8080
+  ports:
+    - port: 8080
+  # sets the label selector to target pods with the label "tier" set as "backend"
+  selector:
+    tier: backend
+  # sets the type of the Service object to NodePort
+  type: NodePort

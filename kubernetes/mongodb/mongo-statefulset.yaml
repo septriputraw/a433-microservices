@@ -1,0 +1,71 @@
+# version of Kubernetes API
+apiVersion: apps/v1
+# define a StatefulSet object 
+kind: StatefulSet 
+# define metadata for the StatefulSet object
+metadata: 
+  # set the name of the StatefulSet object as mongodb
+  name: mongodb 
+  # sets the labels for the StatefulSet object with the label "app" set as "mongodb"
+  labels: 
+    app: mongodb
+# define the specification for the StatefulSet object
+spec: 
+  # define the selector for the StatefulSet object
+  selector: 
+    # sets the match labels for the StatefulSet object with the label "app" set as "mongodb" and the label "tier" set as "database"
+    matchLabels:
+      app: mongodb
+      tier: database
+  # sets the name of the Service object as "mongodb"
+  serviceName: mongodb 
+  # sets the number of replicas to 1
+  replicas: 1 
+  # sets the minimum number of seconds for the StatefulSet object to be ready
+  minReadySeconds: 10 
+  # defines the template for the StatefulSet object
+  template: 
+    # defines metadata for the template
+    metadata: 
+      # sets the labels for the template with the label "app" set as "mongodb" and the label "tier" set as "database"
+      labels: 
+        app: mongodb
+        tier: database
+    # defines the specification for the template
+    spec: 
+      # sets the termination grace period to 10 seconds
+      terminationGracePeriodSeconds: 10 
+      # sets the containers for the template
+      containers:
+      - image: mongo:latest # sets the image for the container as "mongo:latest"
+        name: mongodb # sets the name of the container as "mongodb"
+        imagePullPolicy: IfNotPresent # sets the image pull policy for the container to IfNotPresent
+        env: # sets the environment variables for the container
+          - name: MONGO_INITDB_ROOT_USERNAME_FILE
+            value: /etc/mongo-credentials/MONGO_ROOT_USERNAME
+          - name: MONGO_INITDB_ROOT_PASSWORD_FILE
+            value: /etc/mongo-credentials/MONGO_ROOT_PASSWORD
+        ports: # sets the ports for the container with the port 27017
+          - containerPort: 27017
+            name: mongodb
+        volumeMounts: # sets the volume mounts for the container
+          - name: mongodb-persistent-storage # sets the name of the volume mount as "mongodb-persistent-storage"
+            mountPath: /data/db # sets the mount path for the volume mount as "/data/db"
+          - name: mongodb-secret-mount # sets the name of the volume mount as "mongodb-secret-mount"
+            mountPath: /etc/mongo-credentials # sets the mount path for the volume mount as "/etc/mongo-credentials"
+          - name: mongodb-config-mount # sets the name of the volume mount as "mongodb-config-mount"
+            mountPath: /config # sets the mount path for the volume mount as "/config"
+            readOnly: true # sets the volume mount to read only
+      volumes: # sets the volumes for the StatefulSet object
+        - name: mongodb-persistent-storage # sets the name of the volume as "mongodb-persistent-storage"
+          persistentVolumeClaim: # sets the persistent volume claim for the volume as "mongodb-pv-claim"
+            claimName: mongodb-pv-claim
+        - name: mongodb-secret-mount # sets the name of the volume as "mongodb-secret-mount"
+          secret: # sets the secret for the volume as "mongodb-secret"
+            secretName: mongodb-secret
+        - name: mongodb-config-mount # sets the name of the volume as "mongodb-config-mount"
+          configMap: # sets the config map for the volume as "mongodb-config"
+            name: mongodb-config
+            items: # sets the items for the config map
+              - key: mongo.conf
+                path: mongo.conf

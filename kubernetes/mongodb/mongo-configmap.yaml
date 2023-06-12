@@ -1,0 +1,14 @@
+# Desc: ConfigMap object for MongoDB database
+# version of Kubernetes API
+apiVersion: v1
+# define a ConfigMap object
+kind: ConfigMap
+# metadata of the ConfigMap object
+metadata:
+  # name of the ConfigMap object
+  name: mongodb-config # sets the name of the ConfigMap object as "mongodb-config"
+# data of the ConfigMap object
+data: # defines the data for the ConfigMap object
+  mongo.conf: | # sets the configuration file for the MongoDB database
+    storage:
+      dbPath: /data/db
