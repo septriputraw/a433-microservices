@@ -1,0 +1,70 @@
+# version 3.2
+version: "3.2"
+# services yang digunakan
+services:
+  # service rabbitmq
+  rabbitmq:
+    # image rabbitmq 
+    image: rabbitmq:3.11-management
+    # image: rabbitmq:3.8-management-alpine
+    # nama container
+    container_name: 'rabbitmq'
+    # port yang digunakan
+    ports:
+      - 5672:5672
+      - 15672:15672
+    # volume yang digunakan
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    # jaringan yang digunakan
+    networks:
+      - rabbitmq_network
+  # service order
+  order:
+    # image yang digunakan
+    image: ghcr.io/septriputraw/order-service:latest
+    # image: order-service:latest
+    # aturan restart
+    restart: always
+    # nama container
+    container_name: 'order-service'
+    # port yang digunakan
+    ports:
+      - 3000:3000
+    # bergantung pada service rabbitmq
+    depends_on:
+      - "rabbitmq"
+    
+    # command yang digunakan
+    command:  sh -c '/bin/wait-for-it.sh rabbitmq:5672 --timeout=30 -- npm run start'
+    # environment yang digunakan
+    environment:
+      AMQP_URL: amqp://guest:guest@rabbitmq:5672
+    networks:
+      - rabbitmq_network
+  # service shipping
+  shipping:
+    # image yang digunakan
+    image: ghcr.io/septriputraw/shipping-service:latest
+    # image: shipping-service:latest
+    # aturan restart
+    restart: always
+    # nama container
+    container_name: 'shipping-service'
+    # port yang digunakan
+    ports:
+      - 3001:3001
+    # bergantung pada service rabbitmq
+    depends_on:
+      - "rabbitmq"
+    # command yang digunakan
+    command:  sh -c '/bin/wait-for-it.sh rabbitmq:5672 --timeout=30 -- npm run start'
+    # environment yang digunakan
+    environment:
+      AMQP_URL: amqp://guest:guest@rabbitmq:5672
+    networks:
+      - rabbitmq_network
+networks:
+  rabbitmq_network:
+    driver: bridge
